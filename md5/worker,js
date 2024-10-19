@@ -1,0 +1,17 @@
+import SparkMD5 from 'spark-md5'
+const spark = new SparkMD5.ArrayBuffer()
+self.addEventListener('message', ({ data }) => {
+ const { dataBuffer, status } = data
+ try {
+  if (status === 'ing') {
+   spark.append(dataBuffer)
+   } else if (status === 'end') {
+   self.postMessage({ md5: spark.end(), status: 'success' })
+   spark.destroy() // 销毁计算器
+   }
+  } catch (e) {
+  self.postMessage({ status: 'error', error: e })
+  console.error(e)
+  }
+})
+
