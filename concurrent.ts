@@ -18,7 +18,6 @@ class ConcurrentLimit {
         task,
       });
       /** 添加完需要run一下*/
-      this.runningCount++;
       this.run();
     });
   }
@@ -27,6 +26,7 @@ class ConcurrentLimit {
     //正运行个数少于约定并发数 并且tasks没有执行完才执行
     while (this.runningCount <= this.concurrent && this.tsaks.length) {
       const { task, resolve, reject } = this.tsaks.shift();
+      this.runningCount++;
       task(resolve, reject)?.finally(() => {
         this.runningCount--;
         //重新run
