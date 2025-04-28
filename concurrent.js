@@ -1,8 +1,8 @@
 class ConcurrentLimit {
   /** ts中声明实例属性*/
-  runningCount: number;
-  concurrent: number;
-  tsaks: any[];
+  // runningCount: number;
+  // concurrent: number;
+  // tsaks: any[];
 
   constructor(concurrent = 2) {
     this.runningCount = 0;
@@ -24,10 +24,13 @@ class ConcurrentLimit {
 
   run() {
     //正运行个数少于约定并发数 并且tasks没有执行完才执行
-    while (this.runningCount <= this.concurrent && this.tsaks.length) {
+    while (this.runningCount < this.concurrent && this.tsaks.length) {
       const { task, resolve, reject } = this.tsaks.shift();
+
       this.runningCount++;
-      task(resolve, reject)?.finally(() => {
+      task()?.then(res=>{
+        resolve(res)
+      }).finally(() => {
         this.runningCount--;
         //重新run
         this.run();
@@ -36,7 +39,7 @@ class ConcurrentLimit {
   }
 }
 
-const concurrentLimitClass = new ConcurrentLimit(3);
+const concurrentLimitClass = new ConcurrentLimit(2);
 
 const createRequest = (request, params) => {
   return concurrentLimitClass
@@ -44,6 +47,24 @@ const createRequest = (request, params) => {
       request(params);
     })
     ?.then((res) => {
-      return res;
+     return res
     });
 };
+
+const timeout = (mumber,time)=>{
+  return ()=>new Promise((resolve)=>{
+    setTimeout(()=>{
+      // resolve(mumber); 
+    },time)
+  })
+}
+
+const p1  = timeout(1,1000)
+const p2  = timeout(2,2000)
+const p3  = timeout(3,500)
+const p4  = timeout(4,200)
+
+concurrentLimitClass.add(p1);
+concurrentLimitClass.add(p2);
+concurrentLimitClass.add(p3);
+concurrentLimitClass.add(p4);
