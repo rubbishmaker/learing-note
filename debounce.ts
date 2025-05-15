@@ -1,4 +1,4 @@
-const debounce = <T extends any[]>(func:(...args:T)=>(void),{delay})=>{
+export const debounce = <T extends any[]>(func:(...args:T)=>(void),{delay})=>{
 
     /** 这一个类型不太理解 */
     let timer : NodeJS.Timeout | undefined = undefined;
