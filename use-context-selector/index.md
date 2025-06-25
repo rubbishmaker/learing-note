@@ -1,0 +1,1 @@
+用于解决reatc的context中如果一个context的内容变化所有消费context的订阅都会重新加载的性能问题
